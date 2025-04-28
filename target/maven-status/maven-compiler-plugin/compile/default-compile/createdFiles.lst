@@ -1,0 +1,5 @@
+com\taskmanager\dao\TaskDAO.class
+com\taskmanager\Main.class
+com\taskmanager\ui\MainWindow.class
+com\taskmanager\model\Task.class
+com\taskmanager\util\DBConnection.class
