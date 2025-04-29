@@ -1,5 +1,9 @@
 com\taskmanager\dao\TaskDAO.class
+com\taskmanager\ui\DashboardUI.class
+com\taskmanager\model\User.class
+com\taskmanager\dao\UserDAO.class
+com\taskmanager\dao\imp1\UserDAOImpl.class
+com\taskmanager\util\DBUtil.class
 com\taskmanager\Main.class
-com\taskmanager\ui\MainWindow.class
 com\taskmanager\model\Task.class
 com\taskmanager\util\DBConnection.class
