@@ -1,3 +1,4 @@
+com\taskmanager\ui\HelpWindow.class
 com\taskmanager\dao\TaskDAO.class
 com\taskmanager\ui\DashboardUI.class
 com\taskmanager\model\User.class

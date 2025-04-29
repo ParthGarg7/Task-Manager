@@ -281,7 +281,10 @@ public class DashboardUI extends JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 cardLayout.show(mainContainer, "Login");
             }
-        } else {
+        }else if (action.equals("Help")) {
+            new HelpWindow().setVisible(true); // Opens the Help Window
+        }
+        else {
             JOptionPane.showMessageDialog(this, action + " clicked!", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
