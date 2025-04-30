@@ -1,14 +1,21 @@
 package com.taskmanager.ui;
 
-import com.taskmanager.ui.LoginUI;
-import javax.swing.*;
+import com.taskmanager.dao.TaskDAO;
+import com.taskmanager.dao.UserDAO;
+import com.taskmanager.dao.imp1.UserDAOImpl;
+import com.taskmanager.model.Task;
 import java.awt.*;
 import java.util.Date;
+import javax.swing.*;
 
 public class DashboardUI extends JFrame {
     private JLabel welcomeLabel;
+    private String loggedInUsername;
+    private UserDAO userDAO = new UserDAOImpl(); // Initialized here
 
     public DashboardUI(String loggedInUsername) {
+        this.loggedInUsername = loggedInUsername; // Assign to instance variable
+
         setTitle("Task Manager - Dashboard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 700);
@@ -130,26 +137,68 @@ public class DashboardUI extends JFrame {
     private void openTaskCreationForm() {
         JTextField titleField = new JTextField();
         JTextArea descriptionArea = new JTextArea(4, 20);
-        JTextField tagsField = new JTextField();
         JComboBox<String> priorityBox = new JComboBox<>(new String[]{"High", "Medium", "Low"});
-        JSpinner dueDateSpinner = new JSpinner(new SpinnerDateModel());
+        JComboBox<String> statusBox = new JComboBox<>(new String[]{"Pending", "In Progress", "Completed"});
+
+        JPanel datePanel = new JPanel();
+        datePanel.setLayout(new BoxLayout(datePanel, BoxLayout.X_AXIS));
+        JSpinner dateSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd");
+        dateSpinner.setEditor(dateEditor);
+        datePanel.add(dateSpinner);
 
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
         form.add(new JLabel("Task Title:"));
         form.add(titleField);
+        form.add(Box.createVerticalStrut(5));
         form.add(new JLabel("Description:"));
-        form.add(new JScrollPane(descriptionArea));
-        form.add(new JLabel("Tags:"));
-        form.add(tagsField);
+        JScrollPane scrollPane = new JScrollPane(descriptionArea);
+        form.add(scrollPane);
+        form.add(Box.createVerticalStrut(5));
         form.add(new JLabel("Due Date:"));
-        form.add(dueDateSpinner);
+        form.add(datePanel);
+        form.add(Box.createVerticalStrut(5));
         form.add(new JLabel("Priority:"));
         form.add(priorityBox);
+        form.add(Box.createVerticalStrut(5));
+        form.add(new JLabel("Status:"));
+        form.add(statusBox);
 
         int result = JOptionPane.showConfirmDialog(this, form, "Create New Task", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            JOptionPane.showMessageDialog(this, "Task created successfully!");
+            String title = titleField.getText().trim();
+            String description = descriptionArea.getText().trim();
+            String priority = (String) priorityBox.getSelectedItem();
+            String status = (String) statusBox.getSelectedItem();
+
+            if (title.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Task title cannot be empty", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                Task task = new Task();
+                task.setTitle(title);
+                task.setDescription(description);
+                task.setPriority(priority);
+                task.setStatus(status);
+
+                Date date = (Date) dateSpinner.getValue();
+                task.setDueDate(date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
+
+                int userId = userDAO.getUserId(loggedInUsername); // FIXED!
+                task.setUserId(userId);
+
+                TaskDAO taskDAO = new TaskDAO();
+                taskDAO.addTask(task);
+
+                JOptionPane.showMessageDialog(this, "Task created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                // refreshDashboardData();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error creating task: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -161,7 +210,7 @@ public class DashboardUI extends JFrame {
                 new LoginUI();
             }
         } else if (action.equals("Help")) {
-            new HelpWindow().setVisible(true); // You may need to create HelpWindow.java
+            new HelpWindow().setVisible(true); // Create HelpWindow.java separately
         } else {
             JOptionPane.showMessageDialog(this, action + " clicked!", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
