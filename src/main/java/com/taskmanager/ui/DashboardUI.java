@@ -11,10 +11,13 @@ import javax.swing.*;
 public class DashboardUI extends JFrame {
     private JLabel welcomeLabel;
     private String loggedInUsername;
-    private UserDAO userDAO = new UserDAOImpl(); // Initialized here
+    private UserDAO userDAO = new UserDAOImpl();
+    private JPanel statusPanel;
+    private int userId;
 
     public DashboardUI(String loggedInUsername) {
-        this.loggedInUsername = loggedInUsername; // Assign to instance variable
+        this.loggedInUsername = loggedInUsername;
+        this.userId = userDAO.getUserId(loggedInUsername);
 
         setTitle("Task Manager - Dashboard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,6 +26,9 @@ public class DashboardUI extends JFrame {
 
         JPanel dashboardPanel = createDashboardPanel(loggedInUsername);
         add(dashboardPanel);
+        
+        // Update the status counts from database
+        updateStatusCounts();
 
         setVisible(true);
     }
@@ -80,11 +86,18 @@ public class DashboardUI extends JFrame {
         createTaskButton.setFocusPainted(false);
         createTaskButton.addActionListener(e -> openTaskCreationForm());
 
-        JPanel statusPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+        // Status panel to display task counts
+        statusPanel = new JPanel(new GridLayout(1, 3, 10, 10));
         statusPanel.setMaximumSize(new Dimension(1000, 80));
-        statusPanel.add(createStatusBox("Completed", "12", new Color(76, 175, 80)));
-        statusPanel.add(createStatusBox("In Progress", "5", new Color(255, 193, 7)));
-        statusPanel.add(createStatusBox("Pending", "8", new Color(244, 67, 54)));
+        
+        // Task Management Button
+        JButton manageTasksButton = new JButton("📋 Manage Tasks");
+        manageTasksButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        manageTasksButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        manageTasksButton.setBackground(new Color(33, 150, 243));
+        manageTasksButton.setForeground(Color.WHITE);
+        manageTasksButton.setFocusPainted(false);
+        manageTasksButton.addActionListener(e -> openTaskListUI());
 
         JPanel recentActivities = new JPanel();
         recentActivities.setLayout(new BoxLayout(recentActivities, BoxLayout.Y_AXIS));
@@ -101,6 +114,8 @@ public class DashboardUI extends JFrame {
         contentPanel.add(welcomeSection);
         contentPanel.add(Box.createVerticalStrut(20));
         contentPanel.add(createTaskButton);
+        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(manageTasksButton);
         contentPanel.add(Box.createVerticalStrut(20));
         contentPanel.add(statusPanel);
         contentPanel.add(Box.createVerticalStrut(20));
@@ -113,6 +128,23 @@ public class DashboardUI extends JFrame {
         dashboardPanel.add(new JScrollPane(contentPanel), BorderLayout.CENTER);
 
         return dashboardPanel;
+    }
+
+    public void updateStatusCounts() {
+        TaskDAO taskDAO = new TaskDAO();
+        int userId = userDAO.getUserId(loggedInUsername);
+        
+        int completedCount = taskDAO.getTaskCountByStatus(userId, "Completed");
+        int inProgressCount = taskDAO.getTaskCountByStatus(userId, "In Progress");
+        int pendingCount = taskDAO.getTaskCountByStatus(userId, "Pending");
+        
+        // Update the status panel with actual counts
+        statusPanel.removeAll();
+        statusPanel.add(createStatusBox("Completed", String.valueOf(completedCount), new Color(76, 175, 80)));
+        statusPanel.add(createStatusBox("In Progress", String.valueOf(inProgressCount), new Color(255, 193, 7)));
+        statusPanel.add(createStatusBox("Pending", String.valueOf(pendingCount), new Color(244, 67, 54)));
+        statusPanel.revalidate();
+        statusPanel.repaint();
     }
 
     private JPanel createStatusBox(String title, String value, Color color) {
@@ -187,19 +219,24 @@ public class DashboardUI extends JFrame {
                 Date date = (Date) dateSpinner.getValue();
                 task.setDueDate(date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate());
 
-                int userId = userDAO.getUserId(loggedInUsername); // FIXED!
                 task.setUserId(userId);
 
                 TaskDAO taskDAO = new TaskDAO();
                 taskDAO.addTask(task);
 
                 JOptionPane.showMessageDialog(this, "Task created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                // refreshDashboardData();
+                
+                // Update status counts after adding a new task
+                updateStatusCounts();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error creating task: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         }
+    }
+    
+    private void openTaskListUI() {
+        new TaskListUI(userId, this);
     }
 
     private void handleSidebarAction(String action) {
@@ -210,7 +247,9 @@ public class DashboardUI extends JFrame {
                 new LoginUI();
             }
         } else if (action.equals("Help")) {
-            new HelpWindow().setVisible(true); // Create HelpWindow.java separately
+            new HelpWindow().setVisible(true);
+        } else if (action.equals("Tasks")) {
+            openTaskListUI();
         } else {
             JOptionPane.showMessageDialog(this, action + " clicked!", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
