@@ -20,10 +20,18 @@ public class HelpWindow extends JFrame {
         faqPanel.setLayout(new BoxLayout(faqPanel, BoxLayout.Y_AXIS));
 
         String[][] faqs = {
-            {"How do I create a task?", "Click the 'Add Task' button on the dashboard and fill in the task details."},
-            {"Can I edit a task?", "Yes, select the task and click 'Edit' to change its details."},
-            {"How do I delete a task?", "Select the task and click the 'Delete' button to remove it."},
-            {"How can I track completed tasks?", "Completed tasks are shown in the 'Completed Tasks' section."}
+            {"How do I create and manage tasks in the Task Manager?", 
+             "To create a new task, click on the \"Add Task\" button and fill in details like title, description, priority, and due date. Once added, tasks appear in your task list. You can mark tasks as complete, edit them, or delete them as needed. Organize tasks using categories or filters for better productivity. This feature helps users stay organized and never miss deadlines.\n"
+            },
+            {"Can I use the Task Manager with multiple user accounts?\n", 
+             "Yes, the Task Manager supports multiple user accounts. Each user has a secure login and can manage their own set of tasks independently. This allows teams or families to use the same application without interfering with each other’s data. User-specific views and data separation ensure privacy and custom organization. It's ideal for both individual and shared usage.\n" 
+            },
+            {"Is my data saved permanently and securely?\n",
+             "All your data is stored securely using a local SQLite database. Tasks are saved automatically, and no internet connection is required for offline usage. For added safety, regular backups are recommended. The application uses basic encryption and authentication techniques to protect your data. Your privacy is a top priority in our design.\n"
+            },
+            {"How do I set reminders or due dates for my tasks?\n", 
+             "When adding or editing a task, you can set a due date and time. The application highlights upcoming or overdue tasks to help you stay on track. Although local notifications may not be available, you can easily sort tasks by deadline. Future updates may include reminder pop-ups or email alerts. Until then, due date visibility ensures timely task  completion."
+            }
         };
 
         for (String[] faq : faqs) {

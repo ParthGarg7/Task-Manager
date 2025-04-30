@@ -32,8 +32,20 @@ public class TaskListUI extends JFrame {
         initComponents();
         loadTasks();
         
+        // Add window listener to update dashboard's active panel status when this window is closed
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                // When this window is closed, set Dashboard as active panel again
+                if (dashboardUI != null) {
+                    dashboardUI.updateActivePanel("Dashboard");
+                }
+            }
+        });
+        
         setVisible(true);
     }
+    
     private void loadTasks()
     {
         // ✅ NEW: Update overdue tasks before loading

@@ -12,14 +12,15 @@ import java.util.Map;
 import javax.swing.*;
 import java.util.Date;
 
-
-
 public class DashboardUI extends JFrame {
     private JLabel welcomeLabel;
     private String loggedInUsername;
     private UserDAO userDAO = new UserDAOImpl();
     private JPanel statusPanel;
     private int userId;
+    // Add variables to track active panel and buttons
+    private String activePanel = "Dashboard";
+    private Map<String, JButton> sidebarButtons = new HashMap<>();
 
     public DashboardUI(String loggedInUsername) {
         this.loggedInUsername = loggedInUsername;
@@ -56,8 +57,18 @@ public class DashboardUI extends JFrame {
             btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
             btn.setBackground(Color.WHITE);
             btn.setFocusPainted(false);
+            
+            // Highlight the Dashboard button by default
+            if (item.equals("Dashboard")) {
+                highlightButton(btn);
+            }
+            
             sidebar.add(Box.createVerticalStrut(15));
             sidebar.add(btn);
+            
+            // Store button reference in the map
+            sidebarButtons.put(item, btn);
+            
             btn.addActionListener(e -> handleSidebarAction(item));
         }
 
@@ -134,6 +145,20 @@ public class DashboardUI extends JFrame {
         dashboardPanel.add(new JScrollPane(contentPanel), BorderLayout.CENTER);
 
         return dashboardPanel;
+    }
+
+    // Method to highlight the active button
+    private void highlightButton(JButton button) {
+        button.setBackground(new Color(33, 150, 243)); // Highlight color
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    }
+    
+    // Method to reset button styling
+    private void resetButtonStyle(JButton button) {
+        button.setBackground(Color.WHITE);
+        button.setForeground(Color.BLACK);
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 14));
     }
 
     public void updateStatusCounts() {
@@ -242,10 +267,20 @@ public class DashboardUI extends JFrame {
     }
     
     private void openTaskListUI() {
+        // Update the active panel before opening task list
+        updateActivePanel("Tasks");
         new TaskListUI(userId, this);
     }
 
     private void handleSidebarAction(String action) {
+        // Skip action if clicking the already active panel button (except for Logout and Help)
+        if (action.equals(activePanel) && !action.equals("Logout") && !action.equals("Help")) {
+            return;
+        }
+        
+        // Update active panel
+        updateActivePanel(action);
+        
         if (action.equals("Logout")) {
             int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
@@ -263,14 +298,31 @@ public class DashboardUI extends JFrame {
             calendarFrame.setLocationRelativeTo(this);
             calendarFrame.add(new JScrollPane(calendarPanel));
             calendarFrame.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, action + " clicked!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else if (action.equals("Settings")) {
+            JOptionPane.showMessageDialog(this, "Settings feature coming soon!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    // Method to update the active panel and highlight corresponding button
+    public void updateActivePanel(String panelName) {
+        // Update active panel name
+        activePanel = panelName;
+        
+        // Reset all button styles
+        for (JButton button : sidebarButtons.values()) {
+            resetButtonStyle(button);
+        }
+        
+        // Highlight the active button
+        JButton activeButton = sidebarButtons.get(panelName);
+        if (activeButton != null) {
+            highlightButton(activeButton);
         }
     }
 
     private JPanel createTaskCalendarPanel() {
         TaskDAO taskDAO = new TaskDAO();
-        List<Task> allTasks = taskDAO.getAllTasksByUser(userId); // Ensure this method exists
+        List<Task> allTasks = taskDAO.getAllTasksByUser(userId);
         Map<LocalDate, List<String>> taskMap = new HashMap<>();
 
         for (Task task : allTasks) {
