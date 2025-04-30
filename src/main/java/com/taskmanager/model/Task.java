@@ -12,11 +12,14 @@ public class Task {
     private String status;
     private String createdAt;
     private String updatedAt;
+    private boolean overdue;
+
 
     public Task() {
         // Default status is "Pending" when a new task is created
         this.status = "Pending";
     }
+    
 
     public Task(int taskId, int userId, String title, String description, LocalDate dueDate, 
                String priority, String status, String createdAt, String updatedAt) {
@@ -35,7 +38,18 @@ public class Task {
     public int getTaskId() {
         return taskId;
     }
-    
+
+    public boolean isOverdue() {
+        if ("Pending".equalsIgnoreCase(status) && dueDate != null) {
+            return dueDate.isBefore(LocalDate.now());
+        }
+        return false;
+    }
+    public void setOverdue(boolean overdue) {
+        this.overdue = overdue;
+    }
+
+
     public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
@@ -116,6 +130,8 @@ public class Task {
                 ", status='" + status + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +
+                ", overdue=" + isOverdue() +
+
                 '}';
     }
 }

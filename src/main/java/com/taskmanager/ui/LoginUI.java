@@ -3,15 +3,14 @@ package com.taskmanager.ui;
 import com.taskmanager.dao.UserDAO;
 import com.taskmanager.dao.imp1.UserDAOImpl;
 import com.taskmanager.model.User;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class LoginUI extends JFrame {
+
     private CardLayout cardLayout;
     private JPanel mainContainer;
     private UserDAO userDAO = new UserDAOImpl();
@@ -19,7 +18,15 @@ public class LoginUI extends JFrame {
 
     public LoginUI() {
         try {
-            backgroundImage = ImageIO.read(new File("C:\\Users\\AKSHAT\\Desktop\\VS CODE for all language\\JAVA\\New folder\\Task-Manager\\src\\main\\java\\com\\taskmanager\\ui\\BGimage1.jpg"));
+
+            // Load the background image
+            backgroundImage = ImageIO.read(getClass().getResourceAsStream("/images/BGimage1.jpg"));
+            if (backgroundImage != null) {
+                System.out.println("Image loaded successfully!");
+            } else {
+                System.out.println("Failed to load image.");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -210,6 +217,7 @@ public class LoginUI extends JFrame {
     }
 
     private static class BackgroundPanel extends JPanel {
+
         private final BufferedImage image;
 
         public BackgroundPanel(BufferedImage image) {
@@ -232,3 +240,4 @@ public class LoginUI extends JFrame {
         SwingUtilities.invokeLater(LoginUI::new);
     }
 }
+

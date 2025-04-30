@@ -69,6 +69,20 @@ public class TaskDAO {
         }
         return tasks;
     }
+    public void updateOverdueTasks(int userId) {
+        String sql = "UPDATE tasks SET status = 'Overdue' WHERE user_id = ? AND status != 'Completed' AND due_date < CURRENT_DATE";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     // Get task by task ID
     public Task getTaskById(int taskId) {

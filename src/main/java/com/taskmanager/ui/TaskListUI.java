@@ -34,7 +34,30 @@ public class TaskListUI extends JFrame {
         
         setVisible(true);
     }
-    
+    private void loadTasks()
+    {
+        // ✅ NEW: Update overdue tasks before loading
+        taskDAO.updateOverdueTasks(userId);
+
+        tableModel.setRowCount(0);
+        List<Task> tasks = taskDAO.getAllTasksByUser(userId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+        for (Task task : tasks) {
+            Object[] rowData =
+                    {
+                            task.getTaskId(),
+                            task.getTitle(),
+                            task.getDescription(),
+                            task.getDueDate() != null ? task.getDueDate().format(formatter) : "No Date",
+                            task.getPriority(),
+                            task.getStatus(),
+                            task.getCreatedAt()
+                    };
+            tableModel.addRow(rowData);
+        }
+    }
+
     private void initComponents() {
         // Table setup
         String[] columnNames = {"ID", "Title", "Description", "Due Date", "Priority", "Status", "Created At"};
@@ -101,28 +124,6 @@ public class TaskListUI extends JFrame {
         add(filterPanel, BorderLayout.NORTH);
     }
     
-    private void loadTasks() {
-        // Clear existing table data
-        tableModel.setRowCount(0);
-        
-        // Get all tasks for this user
-        List<Task> tasks = taskDAO.getAllTasksByUser(userId);
-        
-        // Populate table with tasks
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        for (Task task : tasks) {
-            Object[] rowData = {
-                task.getTaskId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getDueDate() != null ? task.getDueDate().format(formatter) : "No Date",
-                task.getPriority(),
-                task.getStatus(),
-                task.getCreatedAt()
-            };
-            tableModel.addRow(rowData);
-        }
-    }
     
     private void filterTasksByStatus(String status) {
         // Clear existing table data
