@@ -4,19 +4,29 @@ import com.taskmanager.dao.UserDAO;
 import com.taskmanager.dao.imp1.UserDAOImpl;
 import com.taskmanager.model.User;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class LoginUI extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainContainer;
-    private String loggedInUsername;
     private UserDAO userDAO = new UserDAOImpl();
+    private BufferedImage backgroundImage;
 
     public LoginUI() {
+        try {
+            backgroundImage = ImageIO.read(new File("C:/Users/AKSHAT/Desktop/VS CODE for all language/JAVA/New folder/Task-Manager/src/main/java/com/taskmanager/ui/loginpage.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         setTitle("Task Manager - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 400);
+        setSize(800, 600);
         setLocationRelativeTo(null);
 
         cardLayout = new CardLayout();
@@ -32,42 +42,61 @@ public class LoginUI extends JFrame {
     }
 
     private JPanel createLoginPanel() {
-        JPanel outerPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
+        BackgroundPanel outerPanel = new BackgroundPanel(backgroundImage);
+        outerPanel.setLayout(new GridBagLayout());
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
 
-        JTextField usernameField = new JTextField();
-        usernameField.setMaximumSize(new Dimension(300, 40));
-        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        JLabel title = new JLabel("Login to Task Manager");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPasswordField passwordField = new JPasswordField();
-        passwordField.setMaximumSize(new Dimension(300, 40));
-        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.WEST;
 
-        JButton loginButton = new JButton("Login");
-        loginButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        loginButton.setBackground(new Color(33, 150, 243));
-        loginButton.setForeground(Color.WHITE);
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        JTextField usernameField = new JTextField(20);
+        usernameField.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        usernameField.setPreferredSize(new Dimension(300, 40));
 
-        JButton goToSignUpButton = new JButton("Sign Up");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(usernameLabel, gbc);
+        gbc.gridx = 1;
+        formPanel.add(usernameField, gbc);
 
-        panel.add(new JLabel("Username:"));
-        panel.add(usernameField);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(new JLabel("Password:"));
-        panel.add(passwordField);
-        panel.add(Box.createVerticalStrut(20));
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        JPasswordField passwordField = new JPasswordField(20);
+        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        passwordField.setPreferredSize(new Dimension(300, 40));
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        formPanel.add(passwordLabel, gbc);
+        gbc.gridx = 1;
+        formPanel.add(passwordField, gbc);
+
+        JButton loginButton = createStyledButton("Login", new Color(33, 150, 243));
+        JButton goToSignUpButton = createStyledButton("Sign Up", Color.WHITE);
+        goToSignUpButton.setForeground(Color.BLACK);
+
+        panel.add(title);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(formPanel);
+        panel.add(Box.createVerticalStrut(30));
         panel.add(loginButton);
-        panel.add(Box.createVerticalStrut(10));
+        panel.add(Box.createVerticalStrut(15));
         panel.add(goToSignUpButton);
 
-        outerPanel.add(panel, gbc);
+        outerPanel.add(panel);
 
         loginButton.addActionListener(e -> {
             String username = usernameField.getText().trim();
@@ -84,37 +113,68 @@ public class LoginUI extends JFrame {
             }
 
             this.dispose(); // Close login window
-            new DashboardUI(username); // Open Dashboard with username
+            new DashboardUI(username); // Open dashboard
         });
 
         goToSignUpButton.addActionListener(e -> cardLayout.show(mainContainer, "SignUp"));
-
         return outerPanel;
     }
 
     private JPanel createSignUpPanel() {
+        BackgroundPanel outerPanel = new BackgroundPanel(backgroundImage);
+        outerPanel.setLayout(new GridBagLayout());
+
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
+
+        JLabel title = new JLabel("Sign Up for Task Manager");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel newUserLabel = new JLabel("New Username:");
+        newUserLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        newUserLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JTextField newUsernameField = new JTextField();
-        newUsernameField.setMaximumSize(new Dimension(400, 40));
+        newUsernameField.setMaximumSize(new Dimension(400, 45));
+        newUsernameField.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        newUsernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        newUsernameField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+
+        JLabel newPassLabel = new JLabel("New Password:");
+        newPassLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        newPassLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPasswordField newPasswordField = new JPasswordField();
-        newPasswordField.setMaximumSize(new Dimension(400, 40));
+        newPasswordField.setMaximumSize(new Dimension(400, 45));
+        newPasswordField.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        newPasswordField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        newPasswordField.setBorder(newUsernameField.getBorder());
 
-        JButton signUpButton = new JButton("Sign Up");
-        JButton goToLoginButton = new JButton("Back to Login");
+        JButton signUpButton = createStyledButton("Sign Up", new Color(76, 175, 80));
+        signUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        panel.add(new JLabel("New Username:"));
+        JButton goToLoginButton = createStyledButton("Back to Login", Color.WHITE);
+        goToLoginButton.setForeground(Color.BLACK);
+        goToLoginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(title);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(newUserLabel);
         panel.add(newUsernameField);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(new JLabel("New Password:"));
-        panel.add(newPasswordField);
         panel.add(Box.createVerticalStrut(20));
+        panel.add(newPassLabel);
+        panel.add(newPasswordField);
+        panel.add(Box.createVerticalStrut(30));
         panel.add(signUpButton);
-        panel.add(Box.createVerticalStrut(10));
+        panel.add(Box.createVerticalStrut(15));
         panel.add(goToLoginButton);
+
+        outerPanel.add(panel);
 
         signUpButton.addActionListener(e -> {
             String username = newUsernameField.getText().trim();
@@ -134,8 +194,38 @@ public class LoginUI extends JFrame {
         });
 
         goToLoginButton.addActionListener(e -> cardLayout.show(mainContainer, "Login"));
+        return outerPanel;
+    }
 
-        return panel;
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setMaximumSize(new Dimension(220, 45));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        return button;
+    }
+
+    private static class BackgroundPanel extends JPanel {
+        private final BufferedImage image;
+
+        public BackgroundPanel(BufferedImage image) {
+            this.image = image;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (image != null) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f)); // 60% translucent
+                g2d.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+                g2d.dispose();
+            }
+        }
     }
 
     public static void main(String[] args) {
