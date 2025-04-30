@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class TaskCalendarPanel extends JPanel {
 
     public TaskCalendarPanel(Map<LocalDate, List<String>> tasksByDate) {
         this.currentMonth = YearMonth.now();
-        this.tasksByDate = tasksByDate;
+        this.tasksByDate = new HashMap<>(tasksByDate); // Store in local HashMap
         setLayout(new GridLayout(0, 7, 10, 10)); // 7 days a week
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -83,6 +84,14 @@ public class TaskCalendarPanel extends JPanel {
                 taskLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
                 taskPanel.add(taskLabel);
             }
+            
+            // If there are more tasks than we can display
+            if (tasks.size() > maxTasks) {
+                JLabel moreLabel = new JLabel("• +" + (tasks.size() - maxTasks) + " more");
+                moreLabel.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+                taskPanel.add(moreLabel);
+            }
+            
             panel.add(taskPanel, BorderLayout.CENTER);
         }
 
@@ -90,7 +99,7 @@ public class TaskCalendarPanel extends JPanel {
     }
 
     public void updateTasks(Map<LocalDate, List<String>> updatedTasks) {
-        this.tasksByDate = updatedTasks;
+        this.tasksByDate = new HashMap<>(updatedTasks); // Create a new HashMap copy
         drawCalendar();
     }
-} 
+}

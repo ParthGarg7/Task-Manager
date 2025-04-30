@@ -36,8 +36,17 @@ public class DashboardUI extends JFrame {
         
         // Update the status counts from database
         updateStatusCounts();
+        
+        // Update overdue tasks
+        updateOverdueTasks();
 
         setVisible(true);
+    }
+
+    // Method to update overdue tasks in the database
+    private void updateOverdueTasks() {
+        TaskDAO taskDAO = new TaskDAO();
+        taskDAO.updateOverdueTasks(userId);
     }
 
     private JPanel createDashboardPanel(String username) {
@@ -103,19 +112,10 @@ public class DashboardUI extends JFrame {
         createTaskButton.setFocusPainted(false);
         createTaskButton.addActionListener(e -> openTaskCreationForm());
 
-        // Status panel to display task counts
-        statusPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+        // Status panel to display task counts - modified to include Overdue
+        statusPanel = new JPanel(new GridLayout(1, 4, 10, 10));
         statusPanel.setMaximumSize(new Dimension(1000, 80));
         
-        // Task Management Button
-        JButton manageTasksButton = new JButton("📋 Manage Tasks");
-        manageTasksButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        manageTasksButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        manageTasksButton.setBackground(new Color(33, 150, 243));
-        manageTasksButton.setForeground(Color.WHITE);
-        manageTasksButton.setFocusPainted(false);
-        manageTasksButton.addActionListener(e -> openTaskListUI());
-
         JPanel recentActivities = new JPanel();
         recentActivities.setLayout(new BoxLayout(recentActivities, BoxLayout.Y_AXIS));
         recentActivities.setBorder(BorderFactory.createTitledBorder("🕒 Recent Activities"));
@@ -131,8 +131,6 @@ public class DashboardUI extends JFrame {
         contentPanel.add(welcomeSection);
         contentPanel.add(Box.createVerticalStrut(20));
         contentPanel.add(createTaskButton);
-        contentPanel.add(Box.createVerticalStrut(10));
-        contentPanel.add(manageTasksButton);
         contentPanel.add(Box.createVerticalStrut(20));
         contentPanel.add(statusPanel);
         contentPanel.add(Box.createVerticalStrut(20));
@@ -168,12 +166,14 @@ public class DashboardUI extends JFrame {
         int completedCount = taskDAO.getTaskCountByStatus(userId, "Completed");
         int inProgressCount = taskDAO.getTaskCountByStatus(userId, "In Progress");
         int pendingCount = taskDAO.getTaskCountByStatus(userId, "Pending");
+        int overdueCount = taskDAO.getTaskCountByStatus(userId, "Overdue");
         
-        // Update the status panel with actual counts
+        // Update the status panel with actual counts including Overdue
         statusPanel.removeAll();
         statusPanel.add(createStatusBox("Completed", String.valueOf(completedCount), new Color(76, 175, 80)));
         statusPanel.add(createStatusBox("In Progress", String.valueOf(inProgressCount), new Color(255, 193, 7)));
         statusPanel.add(createStatusBox("Pending", String.valueOf(pendingCount), new Color(244, 67, 54)));
+        statusPanel.add(createStatusBox("Overdue", String.valueOf(overdueCount), new Color(103, 58, 183))); // Purple for overdue
         statusPanel.revalidate();
         statusPanel.repaint();
     }
@@ -292,12 +292,7 @@ public class DashboardUI extends JFrame {
         } else if (action.equals("Tasks")) {
             openTaskListUI();
         } else if (action.equals("Task Calendar")) {
-            JPanel calendarPanel = createTaskCalendarPanel();
-            JFrame calendarFrame = new JFrame("Task Calendar");
-            calendarFrame.setSize(900, 600);
-            calendarFrame.setLocationRelativeTo(this);
-            calendarFrame.add(new JScrollPane(calendarPanel));
-            calendarFrame.setVisible(true);
+            openTaskCalendarPanel();
         } else if (action.equals("Settings")) {
             JOptionPane.showMessageDialog(this, "Settings feature coming soon!", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -320,15 +315,24 @@ public class DashboardUI extends JFrame {
         }
     }
 
-    private JPanel createTaskCalendarPanel() {
+    private void openTaskCalendarPanel() {
+        // Get fresh task data and create the map for the calendar
         TaskDAO taskDAO = new TaskDAO();
         List<Task> allTasks = taskDAO.getAllTasksByUser(userId);
-        Map<LocalDate, List<String>> taskMap = new HashMap<>();
-
+        Map<LocalDate, List<String>> taskCalendarData = new HashMap<>();
+        
         for (Task task : allTasks) {
-            taskMap.computeIfAbsent(task.getDueDate(), k -> new java.util.ArrayList<>()).add(task.getTitle());
+            if (task.getDueDate() != null) {
+                taskCalendarData.computeIfAbsent(task.getDueDate(), k -> new java.util.ArrayList<>()).add(task.getTitle());
+            }
         }
-
-        return new TaskCalendarPanel(taskMap);
+        
+        // Create and show the calendar panel
+        JPanel calendarPanel = new TaskCalendarPanel(taskCalendarData);
+        JFrame calendarFrame = new JFrame("Task Calendar");
+        calendarFrame.setSize(900, 600);
+        calendarFrame.setLocationRelativeTo(this);
+        calendarFrame.add(new JScrollPane(calendarPanel));
+        calendarFrame.setVisible(true);
     }
 }
