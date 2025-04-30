@@ -5,8 +5,14 @@ import com.taskmanager.dao.UserDAO;
 import com.taskmanager.dao.imp1.UserDAOImpl;
 import com.taskmanager.model.Task;
 import java.awt.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.*;
+import java.util.Date;
+
+
 
 public class DashboardUI extends JFrame {
     private JLabel welcomeLabel;
@@ -42,7 +48,7 @@ public class DashboardUI extends JFrame {
         sidebar.setPreferredSize(new Dimension(220, getHeight()));
         sidebar.setBackground(new Color(45, 45, 45));
 
-        String[] navItems = {"Dashboard", "Tasks", "Categories", "Settings", "Help", "Logout"};
+        String[] navItems = {"Dashboard", "Tasks", "Task Calendar", "Settings", "Help", "Logout"};
         for (String item : navItems) {
             JButton btn = new JButton(item);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -250,8 +256,27 @@ public class DashboardUI extends JFrame {
             new HelpWindow().setVisible(true);
         } else if (action.equals("Tasks")) {
             openTaskListUI();
+        } else if (action.equals("Task Calendar")) {
+            JPanel calendarPanel = createTaskCalendarPanel();
+            JFrame calendarFrame = new JFrame("Task Calendar");
+            calendarFrame.setSize(900, 600);
+            calendarFrame.setLocationRelativeTo(this);
+            calendarFrame.add(new JScrollPane(calendarPanel));
+            calendarFrame.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, action + " clicked!", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    private JPanel createTaskCalendarPanel() {
+        TaskDAO taskDAO = new TaskDAO();
+        List<Task> allTasks = taskDAO.getAllTasksByUser(userId); // Ensure this method exists
+        Map<LocalDate, List<String>> taskMap = new HashMap<>();
+
+        for (Task task : allTasks) {
+            taskMap.computeIfAbsent(task.getDueDate(), k -> new java.util.ArrayList<>()).add(task.getTitle());
+        }
+
+        return new TaskCalendarPanel(taskMap);
     }
 }

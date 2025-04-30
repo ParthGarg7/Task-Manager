@@ -14,6 +14,7 @@ public class TaskDAO {
 
     // No need to create tables as it's now handled in DBUtil static block
 
+    // Add a new task
     public void addTask(Task task) {
         String sql = "INSERT INTO tasks (user_id, title, description, due_date, priority, status, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -37,6 +38,7 @@ public class TaskDAO {
         }
     }
 
+    // Get all tasks by user ID
     public List<Task> getAllTasksByUser(int userId) {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT * FROM tasks WHERE user_id = ?";
@@ -68,6 +70,7 @@ public class TaskDAO {
         return tasks;
     }
 
+    // Get task by task ID
     public Task getTaskById(int taskId) {
         String sql = "SELECT * FROM tasks WHERE task_id = ?";
         try (Connection conn = DBUtil.getConnection();
@@ -98,6 +101,7 @@ public class TaskDAO {
         return null;
     }
 
+    // Update an existing task
     public void updateTask(Task task) {
         String sql = "UPDATE tasks SET title = ?, description = ?, due_date = ?, " +
                      "priority = ?, status = ?, updated_at = ? WHERE task_id = ?";
@@ -120,6 +124,7 @@ public class TaskDAO {
         }
     }
 
+    // Delete a task by task ID
     public void deleteTask(int taskId) {
         String sql = "DELETE FROM tasks WHERE task_id = ?";
         try (Connection conn = DBUtil.getConnection();
@@ -132,6 +137,7 @@ public class TaskDAO {
         }
     }
     
+    // Get tasks by status for a specific user
     public List<Task> getTasksByStatus(int userId, String status) {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT * FROM tasks WHERE user_id = ? AND status = ?";
@@ -164,6 +170,7 @@ public class TaskDAO {
         return tasks;
     }
     
+    // Get the count of tasks by status for a specific user
     public int getTaskCountByStatus(int userId, String status) {
         String sql = "SELECT COUNT(*) as count FROM tasks WHERE user_id = ? AND status = ?";
         try (Connection conn = DBUtil.getConnection();

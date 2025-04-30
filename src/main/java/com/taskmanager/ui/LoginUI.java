@@ -19,7 +19,7 @@ public class LoginUI extends JFrame {
 
     public LoginUI() {
         try {
-            backgroundImage = ImageIO.read(new File("C:/Users/AKSHAT/Desktop/VS CODE for all language/JAVA/New folder/Task-Manager/src/main/java/com/taskmanager/ui/loginpage.jpg"));
+            backgroundImage = ImageIO.read(new File("C:\\Users\\AKSHAT\\Desktop\\VS CODE for all language\\JAVA\\New folder\\Task-Manager\\src\\main\\java\\com\\taskmanager\\ui\\BGimage1.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
