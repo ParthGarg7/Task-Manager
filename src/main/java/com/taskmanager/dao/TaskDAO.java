@@ -2,7 +2,6 @@ package com.taskmanager.dao;
 
 import com.taskmanager.model.Task;
 import com.taskmanager.util.DBUtil;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,8 +13,15 @@ public class TaskDAO {
 
     // No need to create tables as it's now handled in DBUtil static block
 
-    // Add a new task
+    // Add a new task with overdue checking
     public void addTask(Task task) {
+        // Check if due date is in the past and task is not already completed
+        if (task.getDueDate() != null && 
+            task.getDueDate().isBefore(LocalDate.now()) && 
+            !task.getStatus().equals("Completed")) {
+            task.setStatus("Overdue");
+        }
+        
         String sql = "INSERT INTO tasks (user_id, title, description, due_date, priority, status, created_at, updated_at) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
@@ -69,6 +75,7 @@ public class TaskDAO {
         }
         return tasks;
     }
+    
     public void updateOverdueTasks(int userId) {
         String sql = "UPDATE tasks SET status = 'Overdue' WHERE user_id = ? AND status != 'Completed' AND due_date < CURRENT_DATE";
 
@@ -82,7 +89,6 @@ public class TaskDAO {
             e.printStackTrace();
         }
     }
-
 
     // Get task by task ID
     public Task getTaskById(int taskId) {
