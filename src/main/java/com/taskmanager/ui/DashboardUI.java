@@ -104,7 +104,7 @@ public class DashboardUI extends JFrame {
         welcomeSection.add(Box.createVerticalStrut(5));
         welcomeSection.add(new JSeparator(SwingConstants.HORIZONTAL));
 
-        JButton createTaskButton = new JButton("➕ Create New Task");
+        JButton createTaskButton = new JButton("+ New Task");
         createTaskButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         createTaskButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         createTaskButton.setBackground(new Color(76, 175, 80));
