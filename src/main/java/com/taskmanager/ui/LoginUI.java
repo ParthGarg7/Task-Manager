@@ -1,7 +1,7 @@
 package com.taskmanager.ui;
 
 import com.taskmanager.dao.UserDAO;
-import com.taskmanager.dao.imp1.UserDAOImpl;
+import com.taskmanager.dao.impl.UserDAOImpl;
 import com.taskmanager.model.User;
 import java.awt.*;
 import java.awt.image.BufferedImage;
