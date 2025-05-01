@@ -23,20 +23,23 @@ A Java-based desktop task management application with user authentication, task 
 
 ```
 src/main/java/com/taskmanager/
-├── Main.java                 # Application entry point
-├── dao/                      # Data Access Objects
-│   ├── TaskDAO.java          # Task database operations
-│   ├── UserDAO.java          # User DAO interface
+├── Main.java                   # Application entry point
+├── dao/                        # Data Access Objects
+│   ├── TaskDAO.java            # Task database operations
+│   ├── UserDAO.java            # User DAO interface
 │   └── impl/
-│       └── UserDAOImpl.java  # User DAO implementation
-├── model/                    # Data models
-│   ├── Task.java             # Task entity
-│   └── User.java             # User entity
-├── ui/                       # User Interface components
-│   ├── DashboardUI.java      # Main application dashboard
-│   ├── HelpWindow.java       # Help and support interface
-│   ├── LoginUI.java          # Login and registration screen
-│   └── TaskListUI.java       # Task list and management interface
+│       └── UserDAOImpl.java    # User DAO implementation
+├── model/                      # Data models
+│   ├── Task.java               # Task entity
+│   └── User.java               # User entity
+├── ui/                         # User Interface components
+│   ├── DashboardUI.java        # Main application dashboard
+│   ├── HelpWindow.java         # Help and support interface
+│   ├── LoginUI.java            # Login and registration screen
+|   ├── SettingsUI.java         # Setting screen and options
+|   ├── TaskCalendarPanel.java  # UI for task calender
+│   └── TaskListUI.java         # Task list and management interface                                      
+|    
 └── util/                     # Utility classes
     └── DBUtil.java           # Database connection handling
 ```
