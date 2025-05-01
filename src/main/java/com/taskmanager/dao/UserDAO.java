@@ -8,4 +8,5 @@ public interface UserDAO {
     boolean registerUser(User user);  // Register a new user
     User getUserByUsername(String username);  // Get user details by username
     int getUserId(String username);  // Get user ID by username
+    void updateUserPassword(User user);
 }

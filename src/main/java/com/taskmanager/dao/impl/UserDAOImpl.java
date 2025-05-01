@@ -1,11 +1,11 @@
-package com.taskmanager.dao.imp1;
+package com.taskmanager.dao.impl;
 
 import com.taskmanager.dao.UserDAO;
 import com.taskmanager.model.User;
 import com.taskmanager.util.DBUtil;
-import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.*;
 
 public class UserDAOImpl implements UserDAO {
 
@@ -122,5 +122,24 @@ public class UserDAOImpl implements UserDAO {
             e.printStackTrace();
         }
         return -1; // Return -1 if user not found or an error occurred
+    }
+
+    @Override
+    public void updateUserPassword(User user) {
+        String query = "UPDATE users SET password_hash = ? WHERE user_id = ?";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setString(1, hashPassword(user.getPasswordHash()));
+            pstmt.setInt(2, user.getUserId());
+            
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Failed to update password, no rows affected.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Database error: " + e.getMessage());
+        }
     }
 }
