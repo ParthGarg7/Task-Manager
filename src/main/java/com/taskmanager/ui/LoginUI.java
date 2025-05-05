@@ -20,7 +20,7 @@ public class LoginUI extends JFrame {
         try {
 
             // Load the background image
-            backgroundImage = ImageIO.read(getClass().getResourceAsStream("/images/BGimage1.jpg"));
+            backgroundImage = ImageIO.read(getClass().getResourceAsStream("/images/BGimage3.jpg"));
             if (backgroundImage != null) {
                 System.out.println("Image loaded successfully!");
             } else {
