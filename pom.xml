@@ -11,12 +11,12 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>  <!-- or 21 if you're using Java 21 -->
+        <maven.compiler.source>17</maven.compiler.source>  <!-- Update to 21 if needed -->
         <maven.compiler.target>17</maven.compiler.target>
+        <junit.jupiter.version>5.10.0</junit.jupiter.version>
     </properties>
 
     <build>
-        <!-- Resources Configuration -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -24,24 +24,24 @@
         </resources>
 
         <plugins>
-            <!-- Plugin to compile Java code -->
+            <!-- Java Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version> <!-- latest stable -->
+                <version>3.11.0</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 
-            <!-- Plugin to run the app easily -->
+            <!-- Run your main class easily -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
-                    <mainClass>com.taskmanager.Main</mainClass> <!-- Main class as per your provided code -->
+                    <mainClass>com.taskmanager.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
@@ -55,7 +55,7 @@
             <version>3.45.2.0</version>
         </dependency>
 
-        <!-- SLF4J Logging (compatible version) -->
+        <!-- SLF4J Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -66,6 +66,13 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.36</version>
         </dependency>
-    </dependencies>
 
+        <!-- ✅ JUnit 5 API + Engine for testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
